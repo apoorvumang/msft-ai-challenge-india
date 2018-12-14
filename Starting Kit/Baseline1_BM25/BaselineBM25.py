@@ -8,8 +8,8 @@ avgDocLength = 0
 
 
 def GetCorpus(inputfile,corpusfile):
-    f = open(inputfile,"r",encoding="utf-8")
-    fw = open(corpusfile,"w",encoding="utf-8")
+    f = open(inputfile,"r")
+    fw = open(corpusfile,"w")
     for line in f:
         passage = line.strip().lower().split("\t")[2]
         fw.write(passage+"\n")
@@ -30,7 +30,7 @@ def IDF_Generator(corpusfile, delimiter=' ', base=math.e) :
     numOfDocuments = 0   
     totalDocLength = 0
 
-    for line in open(corpusfile,"r",encoding="utf-8") :
+    for line in open(corpusfile,"r") :
         doc = line.strip().split(delimiter)
         totalDocLength += len(doc)
 
@@ -88,8 +88,8 @@ def RunBM25OnEvaluationSet(testfile,outputfile):
 
     lno=0
     tempscores=[]  #This will store scores of 10 query,passage pairs as they belong to same query
-    f = open(testfile,"r",encoding="utf-8")
-    fw = open(outputfile,"w",encoding="utf-8")
+    f = open(testfile,"r")
+    fw = open(outputfile,"w")
     for line in f:
         tokens = line.strip().lower().split("\t")
         Query = tokens[1]
@@ -112,8 +112,8 @@ def RunBM25OnEvaluationSet(testfile,outputfile):
 
 if __name__ == '__main__' :
 
-    inputFileName = "Data.tsv"   # This file should be in the following format : queryid \t query \t passage \t label \t passageid
-    testFileName = "eval1_unlabelled.tsv"  # This file should be in the following format : queryid \t query \t passage \t passageid # order of the query
+    inputFileName = "../../data/data.tsv"   # This file should be in the following format : queryid \t query \t passage \t label \t passageid
+    testFileName = "../../data/eval1_unlabelled.tsv"  # This file should be in the following format : queryid \t query \t passage \t passageid # order of the query
     corpusFileName = "corpus.tsv" 
     outputFileName = "answer.tsv"
 
