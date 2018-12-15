@@ -9,7 +9,7 @@ emb_dim = 50
 def loadEmbeddings(embeddingfile):
     global GloveEmbeddings,emb_dim
 
-    fe = open(embeddingfile,"r",encoding="utf-8",errors="ignore")
+    fe = open(embeddingfile,"r")
     for line in fe:
         tokens= line.strip().split()
         word = tokens[0]
@@ -24,9 +24,15 @@ def loadEmbeddings(embeddingfile):
 def TextDataToCTF(inputfile,outputfile,isEvaluation):
     global GloveEmbeddings,emb_dim,max_query_words,max_passage_words
 
-    f = open(inputfile,"r",encoding="utf-8",errors="ignore")  # Format of the file : query_id \t query \t passage \t label \t passage_id
-    fw = open(outputfile,"w",encoding="utf-8")
+    f = open(inputfile,"r")  # Format of the file : query_id \t query \t passage \t label \t passage_id
+    fw = open(outputfile,"w")
+    n = 0
     for line in f:
+        if n%10000 == 0:
+            print str(n) + " lines done"
+        n += 1
+        if n == 10001:
+            exit(0)
         tokens = line.strip().lower().split("\t")
         query_id,query,passage,label = tokens[0],tokens[1],tokens[2],tokens[3]
 
@@ -71,25 +77,26 @@ def TextDataToCTF(inputfile,outputfile,isEvaluation):
             fw.write("|qfeatures "+query_feature_vector+" |pfeatures "+passage_feature_vector+" |labels "+label_str+"\n")
         else:
             fw.write("|qfeatures "+query_feature_vector+" |pfeatures "+passage_feature_vector+"|qid "+str(query_id)+"\n")
+        exit(0)
 
 
 
 if __name__ == "__main__":
 
-    trainFileName = "traindata.tsv"
-    validationFileName = "validationdata.tsv"
-    EvaluationFileName = "eval1_unlabelled.tsv"
+    trainFileName = "../../data/train.tsv"
+    validationFileName = "../../data/valid.tsv"
+    EvaluationFileName = "../../data/eval1_unlabelled.tsv"
 
-    embeddingFileName = "glove.6B.50d.txt"
+    embeddingFileName = "../../data/glove.6B.50d.txt"
 
     loadEmbeddings(embeddingFileName)    
 
     # Convert Query,Passage Text Data to CNTK Text Format(CTF) using 50-Dimension Glove word embeddings 
-    TextDataToCTF(trainFileName,"TrainData.ctf",False)
+    TextDataToCTF(trainFileName,"../../data/TrainData.ctf",False)
     print("Train Data conversion is done")
-    TextDataToCTF(validationFileName,"ValidationData.ctf",False)
+    TextDataToCTF(validationFileName,"../../data/ValidationData.ctf",False)
     print("Validation Data conversion is done")
-    TextDataToCTF(EvaluationFileName,"EvaluationData.ctf",True)
+    TextDataToCTF(EvaluationFileName,"../../data/EvaluationData.ctf",True)
     print("Evaluation Data conversion is done")
 
 
