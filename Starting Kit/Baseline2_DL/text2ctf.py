@@ -26,13 +26,15 @@ def TextDataToCTF(inputfile,outputfile,isEvaluation):
 
     f = open(inputfile,"r")  # Format of the file : query_id \t query \t passage \t label \t passage_id
     fw = open(outputfile,"w")
+    if (not fw):
+        print 'unable to open'
     n = 0
     for line in f:
         if n%10000 == 0:
             print str(n) + " lines done"
         n += 1
-        if n == 10001:
-            exit(0)
+        # if n == 10001:
+        #     exit(0)
         tokens = line.strip().lower().split("\t")
         query_id,query,passage,label = tokens[0],tokens[1],tokens[2],tokens[3]
 
@@ -77,8 +79,8 @@ def TextDataToCTF(inputfile,outputfile,isEvaluation):
             fw.write("|qfeatures "+query_feature_vector+" |pfeatures "+passage_feature_vector+" |labels "+label_str+"\n")
         else:
             fw.write("|qfeatures "+query_feature_vector+" |pfeatures "+passage_feature_vector+"|qid "+str(query_id)+"\n")
-        exit(0)
-
+    f.close()
+    fw.close()
 
 
 if __name__ == "__main__":
@@ -92,11 +94,11 @@ if __name__ == "__main__":
     loadEmbeddings(embeddingFileName)    
 
     # Convert Query,Passage Text Data to CNTK Text Format(CTF) using 50-Dimension Glove word embeddings 
-    TextDataToCTF(trainFileName,"../../data/TrainData.ctf",False)
+    TextDataToCTF(trainFileName,"/scratche/home/apoorv/TrainData.ctf",False)
     print("Train Data conversion is done")
-    TextDataToCTF(validationFileName,"../../data/ValidationData.ctf",False)
+    TextDataToCTF(validationFileName,"/scratche/home/apoorv/ValidationData.ctf",False)
     print("Validation Data conversion is done")
-    TextDataToCTF(EvaluationFileName,"../../data/EvaluationData.ctf",True)
+    TextDataToCTF(EvaluationFileName,"/scratche/home/apoorv/EvaluationData.ctf",True)
     print("Evaluation Data conversion is done")
 
 

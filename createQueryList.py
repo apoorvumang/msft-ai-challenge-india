@@ -30,7 +30,8 @@ data.append(query)
 
 print str(len(data)) + ' records created.'
 
-newData = sorted(data, key=lambda k: k['id']) 
+# newData = sorted(data, key=lambda k: k['id']) 
+newData = data
 
 for dp in newData:
 	answer = ""

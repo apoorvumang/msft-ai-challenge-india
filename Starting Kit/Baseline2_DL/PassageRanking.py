@@ -22,8 +22,12 @@ emb_dim=50
 ## The following LoadValidationSet method reads ctf format validation file and creates query, passage feature vectors and also copies labels for each pair.
 ## the created vectors will be useful to find metrics on validation set after training each epoch which will be useful to decide the best model 
 def LoadValidationSet(validationfile):
-    f = open(validationfile,'r',encoding="utf-8")
+    f = open(validationfile,'r')
+    n = 0
     for line in f:
+        if n%10000 == 0:
+            print(n)
+        n += 1
         tokens = line.strip().split("|")  
         #tokens[0] will be empty token since the line is starting with |
         x1 = tokens[1].replace("qfeatures","").strip() #Query Features
@@ -139,7 +143,7 @@ def TrainAndValidate(trainfile):
 def GetPredictionOnEvalSet(model,testfile,submissionfile):
     global q_max_words,p_max_words,emb_dim
 
-    f = open(testfile,'r',encoding="utf-8")
+    f = open(testfile,'r')
     all_scores={} # Dictionary with key = query_id and value = array of scores for respective passages
     for line in f:
         tokens = line.strip().split("|")  
@@ -156,7 +160,7 @@ def GetPredictionOnEvalSet(model,testfile,submissionfile):
             all_scores[query_id].append(score)
         else:
             all_scores[query_id] = [score]
-    fw = open(submissionfile,"w",encoding="utf-8")
+    fw = open(submissionfile,"w")
     for query_id in all_scores:
         scores = all_scores[query_id]
         scores_str = [str(sc) for sc in scores] # convert all scores to string values
@@ -167,9 +171,9 @@ def GetPredictionOnEvalSet(model,testfile,submissionfile):
     
 if __name__ == "__main__":
 
-    trainSetFileName = "TrainData.ctf"
-    validationSetFileName = "ValidationData.ctf"
-    testSetFileName = "EvaluationData.ctf"
+    trainSetFileName = "/scratche/home/apoorv/TrainData.ctf"
+    validationSetFileName = "/scratche/home/apoorv/ValidationData.ctf"
+    testSetFileName = "/scratche/home/apoorv/EvaluationData.ctf"
     submissionFileName = "answer.tsv"
    
     LoadValidationSet(validationSetFileName)    #Load Validation Query, Passage Vectors from Validation CTF File
