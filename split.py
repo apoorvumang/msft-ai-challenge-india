@@ -1,7 +1,7 @@
 #!/usr/bin/python
 #split data.tsv into train.tsv and valid.tsv
-RATIO_train = 5 #percentage of train data
-RATIO_valid = 5
+RATIO_train = 90 #percentage of train data
+RATIO_valid = 2
 
 if RATIO_valid + RATIO_train > 100:
 	RATIO_valid  = 100 - RATIO_train

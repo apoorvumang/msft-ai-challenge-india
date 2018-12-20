@@ -84,8 +84,9 @@ def TrainAndValidate(trainfile):
     emb_dim = 50
     num_classes = 2
     minibatch_size = 250
-    epoch_size = 100000 #No.of samples in training set
-    total_epochs = 200 #Total number of epochs to run
+    # epoch_size = 100000 #No.of samples in training set
+    epoch_size = 4717698
+    total_epochs = 10 #Total number of epochs to run
     query_total_dim = q_max_words*emb_dim
     label_total_dim = num_classes
     passage_total_dim = p_max_words*emb_dim
@@ -132,7 +133,7 @@ def TrainAndValidate(trainfile):
             predictLabel = 1 if scores[1]>=scores[0] else 0
             predicted_labels.append(predictLabel) 
         metrics = precision_recall_fscore_support(np.array(validation_labels), np.array(predicted_labels), average='binary')
-        #print("precision : "+str(metrics[0])+" recall : "+str(metrics[1])+" f1 : "+str(metrics[2])+"\n")
+        print("precision : "+str(metrics[0])+" recall : "+str(metrics[1])+" f1 : "+str(metrics[2])+"\n")
 
 
 
