@@ -1,17 +1,38 @@
 import math
 import pickle
+import re
 
+def clean_str(string):
+    """
+    Tokenization/string cleaning.
+    Original from https://github.com/yoonkim/CNN_sentence/blob/master/process_data.py
+    """
+    string = re.sub(r"[^A-Za-z0-9(),!?\'\`]", " ", string)
+    string = re.sub(r"\'s", " \'s", string)
+    string = re.sub(r"\'ve", " \'ve", string)
+    string = re.sub(r"n\'t", " n\'t", string)
+    string = re.sub(r"\'re", " \'re", string)
+    string = re.sub(r"\'d", " \'d", string)
+    string = re.sub(r"\'ll", " \'ll", string)
+    string = re.sub(r",", " , ", string)
+    string = re.sub(r"!", " ! ", string)
+    string = re.sub(r"\(", " \( ", string)
+    string = re.sub(r"\)", " \) ", string)
+    string = re.sub(r"\?", " \? ", string)
+    string = re.sub(r"\s{2,}", " ", string)
+    
+    return string.strip().lower()
 
 #Initialize Global variables 
 docIDFDict = {}
-avgDocLength = 0
+avgDocLength = 61
 
 
 def GetCorpus(inputfile,corpusfile):
     f = open(inputfile,"r")
     fw = open(corpusfile,"w")
     for line in f:
-        passage = line.strip().lower().split("\t")[2]
+        passage = clean_str(line.strip().lower().split("\t")[2])
         fw.write(passage+"\n")
     f.close()
     fw.close()
@@ -87,22 +108,23 @@ def GetBM25Score(Query, Passage, k1=1.5, b=0.75, delimiter=' ') :
 def RunBM25OnEvaluationSet(testfile,outputfile):
 
     lno=0
-    tempscores=[]  #This will store scores of 10 query,passage pairs as they belong to same query
+    tempscores=[0]*10  #This will store scores of 10 query,passage pairs as they belong to same query
     f = open(testfile,"r")
     fw = open(outputfile,"w")
     for line in f:
         tokens = line.strip().lower().split("\t")
-        Query = tokens[1]
-        Passage = tokens[2]
+        Query = clean_str(tokens[1])
+        Passage = clean_str(tokens[2])
+        passage_number = int(tokens[3])
         score = GetBM25Score(Query,Passage) 
-        tempscores.append(score)
+        tempscores[passage_number] = score
         lno+=1
         if(lno%10==0):
             tempscores = [str(s) for s in tempscores]
             scoreString = "\t".join(tempscores)
             qid = tokens[0]
             fw.write(qid+"\t"+scoreString+"\n")
-            tempscores=[]
+            tempscores=[0]*10
         if(lno%5000==0):
             print(lno)
     print(lno)
@@ -113,14 +135,15 @@ def RunBM25OnEvaluationSet(testfile,outputfile):
 if __name__ == '__main__' :
 
     inputFileName = "../../data/data.tsv"   # This file should be in the following format : queryid \t query \t passage \t label \t passageid
-    testFileName = "../../data/eval1_unlabelled.tsv"  # This file should be in the following format : queryid \t query \t passage \t passageid # order of the query
+    testFileName = "../../data/test.tsv"  # This file should be in the following format : queryid \t query \t passage \t passageid # order of the query
     corpusFileName = "corpus.tsv" 
     outputFileName = "answer.tsv"
 
-    GetCorpus(inputFileName,corpusFileName)    # Gets all the passages(docs) and stores in corpusFile. you can comment this line if corpus file is already generated
+    # GetCorpus(inputFileName,corpusFileName)    # Gets all the passages(docs) and stores in corpusFile. you can comment this line if corpus file is already generated
     print("Corpus File is created.")
-    IDF_Generator(corpusFileName)   # Calculates IDF scores. 
+    # IDF_Generator(corpusFileName)   # Calculates IDF scores. 
     #RunBM25OnTestData(testFileName,outputFileName)
+    docIDFDict = pickle.load( open( "docIDFDict.pickle", "rb" ) )
     print("IDF Dictionary Generated.")
     RunBM25OnEvaluationSet(testFileName,outputFileName)
     print("Submission file created. ")
